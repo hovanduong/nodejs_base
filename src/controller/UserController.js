@@ -1,9 +1,18 @@
 const UserRepository = require('../repositories/UserRepository');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-// const jwtConfig = require('../config/jwt');
-// const hash = require('../utils/hash');
+const { json } = require('body-parser');
+const jwtConfig = require('../config/jwt');
+const hash = require('../utils/hash');
 require('dotenv').config();
+
+function generateJwtToken(user){
+    const { _id } = user;
+    return jwt.sign({
+        _id,
+    }, jwtConfig.secret);
+}
+
 class UserController {
     async create(req, res) {
         try {
@@ -21,7 +30,7 @@ class UserController {
                 email,
                 password,
             }
-            const userExists = (await UserRepository.findByUsername(user.email)) != null;
+            const userExists = (await UserRepository.findByUseremail(user.email)) != null;
             
             if (userExists) {
                 return res.json({
@@ -30,7 +39,7 @@ class UserController {
                 })
             }
             await UserRepository.create(user);
-            const newUser = await UserRepository.findByUsername(user.username);
+            const newUser = await UserRepository.findByUseremail(user.email);
             // const token = generateJwtToken(newUser);
             user.password = undefined;
             return res.json({
@@ -46,6 +55,48 @@ class UserController {
                 err
                 
             })
+        }
+    }
+    async login(req,res){
+        try {
+            const {email,password}=req.body;
+            if(!email || !password){
+                return res.json({
+                    error:true,
+                    errorMessage:'abc',
+                });
+            }
+            const user={
+                email,
+                password,
+            }
+            const checkemail=await UserRepository.findByUseremail(user.email);
+            console.log(checkemail);
+            if(!checkemail){
+                return res.json({
+                    error:true,
+                    errorMessage:'Email not exits',
+                })
+            }
+            if(!await bcrypt.compare(password,checkemail.password)){
+                return res.json({
+
+                    error:true,
+                    errorMessage:'Pass not hop le',
+                });
+            }
+            const token=generateJwtToken(user);
+            return res.json({
+                user,
+                token
+            });
+            
+            
+        } catch (error) {
+            return res.json({
+                error:true,
+                errorMessage:'try catch'
+            });
         }
     }
 }

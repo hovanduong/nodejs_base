@@ -9,7 +9,7 @@ class UserRepository{
             password,
         });
     }
-    async findByUsername(email) {
+    async findByUseremail(email) {
         return await User.findOne({ email }).select({ 'name': 1, 'email': 1, 'password': 1 });
     }
 }

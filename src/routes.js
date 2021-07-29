@@ -9,5 +9,6 @@ router.get('/', (req, res) => {
 });
 
 router.post('/user', UserController.create);
+router.post('/auth',UserController.login);
 
 module.exports = router;
