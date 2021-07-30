@@ -1,9 +1,11 @@
 const UserRepository = require('../repositories/UserRepository');
+const RoleReposity = require('../repositories/RoleReposity');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { json } = require('body-parser');
 const jwtConfig = require('../config/jwt');
 const hash = require('../utils/hash');
+const Role=require('../models/role');
 require('dotenv').config();
 
 function generateJwtToken(user){
@@ -16,43 +18,55 @@ function generateJwtToken(user){
 class UserController {
     async create(req, res) {
         try {
+         
+            
             const { name, email, password } = req.body;
         
-            console.log(req.body);
             if (!name || !email || !password) {
                 return res.json({
                     error: true,
                     errorMessage: "Invalid fields.",
                 })
             }
-            const user = {
-                name,
-                email,
-                password,
-            }
-            const userExists = (await UserRepository.findByUseremail(user.email)) != null;
             
+           
+            const userExists = (await UserRepository.findByUseremail(email)) != null;
+    
             if (userExists) {
                 return res.json({
                     error: true,
-                    errorMessage: "Username already registered",
+                    errorMessage: "Email already registered",
                 })
             }
-            await UserRepository.create(user);
-            const newUser = await UserRepository.findByUseremail(user.email);
-            // const token = generateJwtToken(newUser);
-            user.password = undefined;
-            return res.json({
-                user: newUser,
-                // token
-            })
 
+            const role=(await RoleReposity.findByUseremail());
+            
+            if(role._id == nul){
+                return res.json({
+                    error:true,
+                    errorMessage:"Role not exit"
+                })
+            }
+            const roles=role._id;
+            const user = {
+                name,
+                email,
+                password,  
+                roles
+            }
+             await UserRepository.create(user);
+              const newUser =await  UserRepository.findByUseremail(user.email);
+              const token = generateJwtToken(newUser);
+              user.password = undefined;
+              return res.json({
+                  user: newUser,
+                  token:token
+              })
         } catch (err) {
             console.log(err.message)
             return res.json({
                 error: true,
                 errorMessage: "An error has occurred. Retry!.",
-                err
                 
             })
         }

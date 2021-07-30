@@ -2,11 +2,12 @@ const User = require('../models/UserModel');
 const ObjectId = require('mongoose').Types.ObjectId;
 
 class UserRepository{
-    async create({ name, email, password }) {
+    async create({ name, email, password,roles }) {
         await User.create({
             name,
             email,
-            password,
+            password,     
+            roles
         });
     }
     async findByUseremail(email) {

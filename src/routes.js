@@ -1,8 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const UserController = require('./controller/UserController');
+const userMiddleware = require('./middlewares/auth/authencation_middleware');
+const adminMiddleware = require('./middlewares/auth/authorization_middlewares');
 
-router.get('/', (req, res) => {
+const middleware={
+    user:userMiddleware,
+    user1:adminMiddleware
+}
+router.get('/',[middleware.user1] ,(req, res) => {
     return res.json({
         warn: "me",
     })

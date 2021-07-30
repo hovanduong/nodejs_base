@@ -14,6 +14,14 @@ password:{
     require:true,
     select:false,
 },
+roles:[
+    {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "Role"
+    type:String,
+    require:true,
+    }
+  ],
 createAt:{
     type:Number,
     default:Date.now,
