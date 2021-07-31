@@ -1,6 +1,6 @@
-const User = require('../models/UserModel');
+const db = require('../models/index');
 const ObjectId = require('mongoose').Types.ObjectId;
-
+const User=db.user;
 class UserRepository{
     async create({ name, email, password,roles }) {
         await User.create({

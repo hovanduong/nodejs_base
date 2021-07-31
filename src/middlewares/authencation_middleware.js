@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const config = require('../../config/jwt');
+const config = require('../config/jwt');
 
 module.exports = (req, res, next) => {
 
@@ -31,6 +31,7 @@ module.exports = (req, res, next) => {
         req.bearerToken = token;
         req.tokenInfo = decoded;
         req._id = decoded._id;
+        
         next();
     });
 

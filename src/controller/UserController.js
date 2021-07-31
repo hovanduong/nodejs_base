@@ -21,7 +21,7 @@ class UserController {
          
             
             const { name, email, password } = req.body;
-        
+           
             if (!name || !email || !password) {
                 return res.json({
                     error: true,
@@ -40,13 +40,14 @@ class UserController {
             }
 
             const role=(await RoleReposity.findByUseremail());
-            
-            if(role._id == nul){
+           
+            if(role._id == null){
                 return res.json({
                     error:true,
                     errorMessage:"Role not exit"
                 })
             }
+       
             const roles=role._id;
             const user = {
                 name,
@@ -54,6 +55,7 @@ class UserController {
                 password,  
                 roles
             }
+            console.log('a');
              await UserRepository.create(user);
               const newUser =await  UserRepository.findByUseremail(user.email);
               const token = generateJwtToken(newUser);
@@ -63,7 +65,6 @@ class UserController {
                   token:token
               })
         } catch (err) {
-            console.log(err.message)
             return res.json({
                 error: true,
                 errorMessage: "An error has occurred. Retry!.",
@@ -85,7 +86,6 @@ class UserController {
                 password,
             }
             const checkemail=await UserRepository.findByUseremail(user.email);
-            console.log(checkemail);
             if(!checkemail){
                 return res.json({
                     error:true,
